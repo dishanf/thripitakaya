@@ -12,8 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  stacked: ^2.3.6
-  stacked_services: ^0.8.22+1
+  stacked: ^2.3.12
+  stacked_services: ^0.8.26
   #stacked_hooks: ^0.2.2
   get_it: ^7.2.0
   flutter_hooks: ^0.18.3
