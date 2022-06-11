@@ -70,12 +70,6 @@ class _State extends State<HomeView> {
                         shadowColor: Colors.black,
                         elevation: 5,
                         child: ListTile(
-                          /* leading: Icon(
-                            Icons.auto_stories_rounded,
-                            color: model.items[index].titleFile != ''
-                                ? Colors.greenAccent
-                                : Colors.red,
-                          ), */
                           title: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -89,15 +83,6 @@ class _State extends State<HomeView> {
                               ),
                             ),
                           ),
-                          /* subtitle: Text(
-                            model.items[index].date
-                                .replaceFirst('T', ' ')
-                                .substring(0, 16),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 12,
-                            ),
-                          ), */
                         ),
                         margin: const EdgeInsets.all(1.0),
                       ),
@@ -106,15 +91,6 @@ class _State extends State<HomeView> {
                 ),
                 onRefresh: model.onRefreshWithBusy,
               ),
-        /*  floatingActionButton: Theme(
-          data: Theme.of(context).copyWith(splashColor: Colors.yellow),
-          child: FloatingActionButton(
-            onPressed: () async {
-              //await model.navigateToCaptureViewPage();
-            },
-            child: const Icon(Icons.navigate_next),
-          ),
-        ), */
       ),
       viewModelBuilder: () => HomeViewModel(),
     );

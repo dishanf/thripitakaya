@@ -75,7 +75,7 @@ class _PlayerViewState extends State<PlayerView> {
             audioplayed = true;
           });
         } else {
-          print("Error while playing audio.");
+          //print("Error while playing audio.");
         }
       }
     });
@@ -139,7 +139,7 @@ class _PlayerViewState extends State<PlayerView> {
                         color: Colors.greenAccent,
                         onPressed: () async {
                           int pos = await audioPlayer.getCurrentPosition();
-                          int result = await audioPlayer.seek(
+                          await audioPlayer.seek(
                             Duration(
                               milliseconds: pos + 10000,
                             ),
@@ -168,7 +168,7 @@ class _PlayerViewState extends State<PlayerView> {
                           audioplayed = true;
                         });
                       } else {
-                        print("Error while playing audio.");
+                        //print("Error while playing audio.");
                       }
                     } else if (audioplayed && !isplaying) {
                       int result = await audioPlayer.resume();
@@ -179,7 +179,7 @@ class _PlayerViewState extends State<PlayerView> {
                           audioplayed = true;
                         });
                       } else {
-                        print("Error on resume audio.");
+                        //print("Error on resume audio.");
                       }
                     } else {
                       int result = await audioPlayer.pause();
@@ -189,7 +189,7 @@ class _PlayerViewState extends State<PlayerView> {
                           isplaying = false;
                         });
                       } else {
-                        print("Error on pause audio.");
+                        //print("Error on pause audio.");
                       }
                     }
                   },
@@ -224,7 +224,7 @@ class _PlayerViewState extends State<PlayerView> {
                         currentpos = 0;
                       });
                     } else {
-                      print("Error on stop audio.");
+                      //print("Error on stop audio.");
                     }
                     Navigator.pop(context);
                   },
