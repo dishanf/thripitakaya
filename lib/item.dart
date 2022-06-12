@@ -8,6 +8,8 @@ class Item {
   late bool isPlayable = false;
   late String textPath;
 
+  Item();
+
   String getTitleFile() {
     return titleFile;
   }

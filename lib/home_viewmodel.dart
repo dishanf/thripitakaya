@@ -59,34 +59,6 @@ class HomeViewModel extends BaseViewModel {
         }
       }
     }
-/* 
-    Item s1 = Item.folderItem(
-        headerkey: Globals.deegaNikaya,
-        displayname: 'දීඝ නිකාය',
-        titleFile: 'දීඝනිකාය.mp4');
-    Item s2 = Item.folderItem(
-        headerkey: Globals.anguththaraNikaya,
-        displayname: 'මජ්ඣිම නිකාය',
-        titleFile: 'magic.mp3');
-    Item s3 = Item.folderItem(
-        headerkey: Globals.anguththaraNikaya,
-        displayname: 'සංයුත්ත නිකාය',
-        titleFile: 'magic.mp3');
-    Item s4 = Item.folderItem(
-        headerkey: Globals.anguththaraNikaya,
-        displayname: 'අඞ්ගුත්තර නිකාය',
-        titleFile: 'magic.mp3');
-    Item s5 = Item.folderItem(
-        headerkey: Globals.anguththaraNikaya,
-        displayname: 'ඛුද්දක නිකාය',
-        titleFile: 'magic.mp3');
-
-    items.add(s1);
-    items.add(s2);
-    items.add(s3);
-    items.add(s4);
-    items.add(s5); */
-
     setBusy(false);
   }
 
@@ -99,21 +71,9 @@ class HomeViewModel extends BaseViewModel {
     );
   }
 
-  Future navigateToAnguththaraNikayaViewPage(
-    Item item,
-  ) async {
-    await _navigationService.navigateTo(
-      Routes.playerView,
-      arguments: item,
-    );
-  }
-
-  Future navigateToSettingsViewPage(
-      //Item item,
-      ) async {
+  Future navigateToSettingsViewPage() async {
     await _navigationService.navigateTo(
       Routes.settingsView,
-      //arguments: item,
     );
   }
 }

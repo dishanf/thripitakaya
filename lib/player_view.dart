@@ -100,61 +100,32 @@ class _PlayerViewState extends State<PlayerView> {
             ),
           ),
         ),
-        body: Container(
-          //margin: const EdgeInsets.only(top: 50),
+        body: GestureDetector(
+          onPanUpdate: (details) async {
+            // Swiping in right direction.
+            if (details.delta.dx > 0) {
+              int pos = await audioPlayer.getCurrentPosition();
+              await audioPlayer.seek(
+                Duration(
+                  milliseconds: pos + 10000,
+                ),
+              );
+            }
+
+            // Swiping in left direction.
+            if (details.delta.dx < 0) {
+              int pos = await audioPlayer.getCurrentPosition();
+              if (pos > 10000) {
+                await audioPlayer.seek(
+                  Duration(
+                    milliseconds: pos - 10000,
+                  ),
+                );
+              }
+            }
+          },
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.all(15),
-                      child: MaterialButton(
-                        height: 80,
-                        color: Colors.greenAccent,
-                        onPressed: () async {
-                          int pos = await audioPlayer.getCurrentPosition();
-                          if (pos > 10000) {
-                            await audioPlayer.seek(
-                              Duration(
-                                milliseconds: pos - 10000,
-                              ),
-                            );
-                          }
-                        },
-                        child: const Icon(
-                          Icons.arrow_left_rounded,
-                          size: 50,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.all(15),
-                      child: MaterialButton(
-                        height: 80,
-                        color: Colors.greenAccent,
-                        onPressed: () async {
-                          int pos = await audioPlayer.getCurrentPosition();
-                          await audioPlayer.seek(
-                            Duration(
-                              milliseconds: pos + 10000,
-                            ),
-                          );
-                        },
-                        child: const Icon(
-                          Icons.arrow_right_rounded,
-                          size: 50,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
               Expanded(
                 child: InkWell(
                   onTap: () async {

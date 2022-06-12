@@ -70,7 +70,7 @@ class _State extends State<SuthraListView> {
                                 );
                               }
                             },
-                            onLongPress: () async {
+                            onDoubleTap: () async {
                               if (model.items[index].isPlayable) {
                                 await model.navigateToPlayerViewPage(
                                   model.items[index],

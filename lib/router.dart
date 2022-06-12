@@ -32,7 +32,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
 
     case Routes.suthraListView:
-      Item data = settings.arguments as Item;
+      Map map = settings.arguments as Map;
+      Item data = map['arguments'];
       return _getPageRoute(
         routeName: settings.name,
         viewToShow: SuthraListView(
@@ -41,7 +42,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       );
 
     case Routes.playerView:
-      Item data = settings.arguments as Item;
+      //Item data = settings.arguments as Item;
+      Map map = settings.arguments as Map;
+      Item data = map['arguments'];
       return _getPageRoute(
         routeName: settings.name,
         viewToShow: PlayerView(

@@ -12,6 +12,18 @@ class HomeView extends StatefulWidget {
 
 class _State extends State<HomeView> {
   AudioPlayer audioPlayer = AudioPlayer();
+  final player = AudioCache();
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () async {
+      player.play(
+        'thripitakaya.mp4',
+        mode: PlayerMode.LOW_LATENCY,
+      );
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +73,14 @@ class _State extends State<HomeView> {
                           );
                         }
                       },
-                      onLongPress: () async {
+                      onDoubleTap: () async {
                         await model.navigateToSuthraListViewPage(
                           model.items[index],
+                        );
+
+                        player.play(
+                          'thripitakaya.mp4',
+                          mode: PlayerMode.LOW_LATENCY,
                         );
                       },
                       child: Card(
