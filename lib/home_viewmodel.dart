@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -8,14 +9,23 @@ import 'package:tipitaka/item.dart';
 import 'package:tipitaka/locator.dart';
 import 'package:tipitaka/router.dart';
 import 'package:path/path.dart';
+import 'globals.dart' as globals;
 
 class HomeViewModel extends BaseViewModel {
   final NavigationService _navigationService = locator<NavigationService>();
-
+  AudioPlayer audioPlayer = AudioPlayer();
   late List<Item> items = [];
 
   Future init() async {
     await onRefreshWithBusy();
+
+    // play home title file
+    if (globals.homeTitleVoice.isNotEmpty) {
+      audioPlayer.play(
+        globals.homeTitleVoice,
+        isLocal: true,
+      );
+    }
   }
 
   Future reset() async {
@@ -41,7 +51,13 @@ class HomeViewModel extends BaseViewModel {
         String filename = basename(fileOrDir.path);
 
         if (fileOrDir is File) {
-          if (!filename.startsWith('_')) {
+          if (filename == '_Back.mp3') {
+            globals.backButtonVoice = fileOrDir.path;
+          } else if (filename == '_Thripitakaya.mp3') {
+            globals.homeTitleVoice = fileOrDir.path;
+          } else if (filename == '_SeekEnd.mp3') {
+            globals.seekEndClip = fileOrDir.path;
+          } else if (!filename.startsWith('_')) {
             Item item = Item.playableItem(
               displayname: filename,
               file: fileOrDir.path,
@@ -58,6 +74,8 @@ class HomeViewModel extends BaseViewModel {
           items.add(item);
         }
       }
+
+      items.sort((a, b) => a.displayname.compareTo(b.displayname));
     }
     setBusy(false);
   }

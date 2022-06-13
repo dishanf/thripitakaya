@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tipitaka/home_viewmodel.dart';
+import 'globals.dart' as globals;
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -14,16 +15,16 @@ class _State extends State<HomeView> {
   AudioPlayer audioPlayer = AudioPlayer();
   final player = AudioCache();
 
-  @override
+  /* @override
   void initState() {
     Future.delayed(Duration.zero, () async {
-      player.play(
-        'thripitakaya.mp4',
-        mode: PlayerMode.LOW_LATENCY,
-      );
+      /* audioPlayer.play(
+        globals.homeTitleVoice,
+        isLocal: true,
+      ); */
     });
     super.initState();
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +79,9 @@ class _State extends State<HomeView> {
                           model.items[index],
                         );
 
-                        player.play(
-                          'thripitakaya.mp4',
-                          mode: PlayerMode.LOW_LATENCY,
+                        audioPlayer.play(
+                          globals.homeTitleVoice,
+                          isLocal: true,
                         );
                       },
                       child: Card(

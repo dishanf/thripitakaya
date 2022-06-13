@@ -50,6 +50,8 @@ class SuthraListViewModel extends BaseViewModel {
       }
     }
 
+    items.sort((a, b) => a.displayname.compareTo(b.displayname));
+
     setBusy(false);
   }
 

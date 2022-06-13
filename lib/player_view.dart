@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:tipitaka/item.dart';
 import 'package:tipitaka/player_viewmodel.dart';
 import 'package:stacked/stacked.dart';
+import 'globals.dart' as globals;
 
 class PlayerView extends StatefulWidget {
   final Item item;
@@ -26,7 +27,8 @@ class _PlayerViewState extends State<PlayerView> {
   late Uint8List audiobytes;
 
   AudioPlayer audioPlayer = AudioPlayer();
-  final player = AudioCache();
+  AudioPlayer audioClipPlayer = AudioPlayer();
+  //final player = AudioCache();
 
   @override
   void initState() {
@@ -104,21 +106,43 @@ class _PlayerViewState extends State<PlayerView> {
           onPanUpdate: (details) async {
             // Swiping in right direction.
             if (details.delta.dx > 0) {
+              int duration = await audioPlayer.getDuration();
               int pos = await audioPlayer.getCurrentPosition();
-              await audioPlayer.seek(
-                Duration(
-                  milliseconds: pos + 10000,
-                ),
-              );
+              if (pos + 10000 < duration) {
+                await audioPlayer.seek(
+                  Duration(
+                    milliseconds: pos + 10000,
+                  ),
+                );
+              } else {
+                if (globals.seekEndClip.isNotEmpty) {
+                  audioClipPlayer.play(
+                    globals.seekEndClip,
+                    isLocal: true,
+                  );
+                }
+              }
             }
 
             // Swiping in left direction.
             if (details.delta.dx < 0) {
               int pos = await audioPlayer.getCurrentPosition();
-              if (pos > 10000) {
+              if (10000 < pos) {
                 await audioPlayer.seek(
                   Duration(
                     milliseconds: pos - 10000,
+                  ),
+                );
+              } else {
+                if (globals.seekEndClip.isNotEmpty) {
+                  audioClipPlayer.play(
+                    globals.seekEndClip,
+                    isLocal: true,
+                  );
+                }
+                await audioPlayer.seek(
+                  const Duration(
+                    milliseconds: 0,
                   ),
                 );
               }
@@ -180,10 +204,12 @@ class _PlayerViewState extends State<PlayerView> {
                   minWidth: double.infinity,
                   color: Colors.greenAccent,
                   onPressed: () async {
-                    player.play(
-                      'back.mp4',
-                      mode: PlayerMode.LOW_LATENCY,
-                    );
+                    if (globals.backButtonVoice.isNotEmpty) {
+                      audioPlayer.play(
+                        globals.backButtonVoice,
+                        isLocal: true,
+                      );
+                    }
                   },
                   onLongPress: () async {
                     int result = await audioPlayer.stop();

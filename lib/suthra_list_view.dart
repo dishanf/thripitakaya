@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:tipitaka/suthra_list_viewmodel.dart';
 import 'package:tipitaka/item.dart';
+import 'globals.dart' as globals;
 
 class SuthraListView extends StatefulWidget {
   final Item item;
@@ -75,6 +76,13 @@ class _State extends State<SuthraListView> {
                                 await model.navigateToPlayerViewPage(
                                   model.items[index],
                                 );
+
+                                if (widget.item.titleFile != '') {
+                                  audioPlayer.play(
+                                    widget.item.titleFile,
+                                    isLocal: true,
+                                  );
+                                }
                               } else {
                                 await model.navigateToListViewPage(
                                   model.items[index],
@@ -130,10 +138,12 @@ class _State extends State<SuthraListView> {
                           Navigator.pop(context);
                         },
                         onPressed: () async {
-                          player.play(
-                            'back.mp4',
-                            mode: PlayerMode.LOW_LATENCY,
-                          );
+                          if (globals.backButtonVoice.isNotEmpty) {
+                            audioPlayer.play(
+                              globals.backButtonVoice,
+                              isLocal: true,
+                            );
+                          }
                         },
                         child: const Text(
                           "ආපසු",
