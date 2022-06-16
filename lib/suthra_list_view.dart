@@ -100,14 +100,6 @@ class _State extends State<SuthraListView> {
                               shadowColor: Colors.black,
                               elevation: 5,
                               child: ListTile(
-                                /* leading: Icon(
-                                  model.items[index].isPlayable
-                                      ? Icons.play_circle_outlined
-                                      : Icons.auto_stories_rounded,
-                                  color: model.items[index].titleFile != ''
-                                      ? Colors.greenAccent
-                                      : Colors.red,
-                                ), */
                                 title: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(

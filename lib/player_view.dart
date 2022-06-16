@@ -17,18 +17,23 @@ class PlayerView extends StatefulWidget {
 }
 
 class _PlayerViewState extends State<PlayerView> {
-  @override
+  //@override
   //int maxduration = 100;
-  int currentpos = 0;
-  String currentpostlabel = "00:00";
-  bool isplaying = false;
-  bool audioplayed = false;
-  String textData = '';
-  late Uint8List audiobytes;
+  //int currentpos = 0;
+  //String currentpostlabel = "00:00";
+  bool isPlaying = false;
+  bool audioPlayed = false;
+
+  bool altIsPlaying = false;
+  bool altAudioPlayed = false;
+  bool altIsCurrent = false;
+
+  //String textData = '';
+  //late Uint8List audiobytes;
 
   AudioPlayer audioPlayer = AudioPlayer();
+  AudioPlayer altAudioPlayer = AudioPlayer();
   AudioPlayer audioClipPlayer = AudioPlayer();
-  //final player = AudioCache();
 
   @override
   void initState() {
@@ -68,13 +73,13 @@ class _PlayerViewState extends State<PlayerView> {
         });
       }); */
 
-      if (!isplaying && !audioplayed) {
+      if (!isPlaying && !audioPlayed) {
         int result = await audioPlayer.play(widget.item.file, isLocal: true);
         if (result == 1) {
           //play success
           setState(() {
-            isplaying = true;
-            audioplayed = true;
+            isPlaying = true;
+            audioPlayed = true;
           });
         } else {
           //print("Error while playing audio.");
@@ -103,6 +108,7 @@ class _PlayerViewState extends State<PlayerView> {
           ),
         ),
         body: GestureDetector(
+          // Swiping
           onPanUpdate: (details) async {
             // Swiping in right direction.
             if (details.delta.dx > 0) {
@@ -152,39 +158,91 @@ class _PlayerViewState extends State<PlayerView> {
             children: [
               Expanded(
                 child: InkWell(
+                  // Lang change
+                  onLongPress: () async {
+                    // pause the current playing file
+                    if (altIsPlaying) {
+                      int result = await altAudioPlayer.pause();
+                      if (result == 1) {
+                        altIsPlaying = false;
+                      }
+                    }
+                    if (isPlaying) {
+                      int result = await audioPlayer.pause();
+                      if (result == 1) {
+                        isPlaying = false;
+                      }
+                    }
+                    // switch
+                    if (altIsCurrent) {
+                      // main lang file
+                      int result = await audioPlayer.resume();
+                      if (result == 1) {
+                        isPlaying = true;
+                      }
+                      altIsCurrent = false;
+                    } else {
+                      // alt file
+                      if (widget.item.altFile.isNotEmpty) {
+                        if (altAudioPlayed) {
+                          int result = await altAudioPlayer.resume();
+                          if (result == 1) {
+                            altIsPlaying = true;
+                          }
+                        } else {
+                          int result = await altAudioPlayer.play(
+                            widget.item.altFile,
+                            isLocal: true,
+                          );
+                          if (result == 1) {
+                            altAudioPlayed = true;
+                            altIsPlaying = true;
+                          }
+                        }
+                        altIsCurrent = true;
+                      }
+                    }
+                  },
                   onTap: () async {
-                    if (!isplaying && !audioplayed) {
-                      int result = await audioPlayer.play(widget.item.file,
-                          isLocal: true);
+                    // pause or resume
+                    /* if (!isPlaying && !audioPlayed) {
+                      int result = await audioPlayer.play(
+                        widget.item.file,
+                        isLocal: true,
+                      );
+
                       if (result == 1) {
                         //play success
                         setState(() {
-                          isplaying = true;
-                          audioplayed = true;
+                          isPlaying = true;
+                          audioPlayed = true;
                         });
-                      } else {
-                        //print("Error while playing audio.");
                       }
-                    } else if (audioplayed && !isplaying) {
-                      int result = await audioPlayer.resume();
-                      if (result == 1) {
-                        //resume success
-                        setState(() {
-                          isplaying = true;
-                          audioplayed = true;
-                        });
+                    } */
+
+                    if (altIsCurrent) {
+                      if (altAudioPlayed && !altIsPlaying) {
+                        int result = await altAudioPlayer.resume();
+                        if (result == 1) {
+                          altIsPlaying = true;
+                        }
                       } else {
-                        //print("Error on resume audio.");
+                        int result = await altAudioPlayer.pause();
+                        if (result == 1) {
+                          altIsPlaying = false;
+                        }
                       }
                     } else {
-                      int result = await audioPlayer.pause();
-                      if (result == 1) {
-                        //pause success
-                        setState(() {
-                          isplaying = false;
-                        });
+                      if (audioPlayed && !isPlaying) {
+                        int result = await audioPlayer.resume();
+                        if (result == 1) {
+                          isPlaying = true;
+                        }
                       } else {
-                        //print("Error on pause audio.");
+                        int result = await audioPlayer.pause();
+                        if (result == 1) {
+                          isPlaying = false;
+                        }
                       }
                     }
                   },
@@ -212,16 +270,9 @@ class _PlayerViewState extends State<PlayerView> {
                     }
                   },
                   onLongPress: () async {
-                    int result = await audioPlayer.stop();
-                    if (result == 1) {
-                      //stop success
-                      setState(() {
-                        isplaying = false;
-                        audioplayed = false;
-                        currentpos = 0;
-                      });
-                    } else {
-                      //print("Error on stop audio.");
+                    await audioPlayer.stop();
+                    if (altAudioPlayed) {
+                      await altAudioPlayer.stop();
                     }
                     Navigator.pop(context);
                   },

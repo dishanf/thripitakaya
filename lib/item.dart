@@ -5,8 +5,8 @@ class Item {
   late String displayname;
   late String titleFile;
   late String file;
+  late String altFile;
   late bool isPlayable = false;
-  late String textPath;
 
   Item();
 
@@ -39,11 +39,19 @@ class Item {
 
     int index = file.lastIndexOf('/');
     String path = file.substring(0, index);
-    titleFile = path + '/_' + displayname + '.mp3';
 
+    // title file
+    titleFile = path + '/_' + displayname + '.mp3';
     File titleFilePath = File(titleFile);
     if (!titleFilePath.existsSync()) {
       titleFile = '';
+    }
+
+    // alternative file (other lang file)
+    altFile = path + '/__' + displayname + '.mp3';
+    File altFilePath = File(altFile);
+    if (!altFilePath.existsSync()) {
+      altFile = '';
     }
   }
 }
