@@ -91,121 +91,155 @@ class _PlayerViewState extends State<PlayerView> {
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<PlayerViewModel>.reactive(
-      onModelReady: (model) => model.init(),
-      builder: (context, model, child) => Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          foregroundColor: Colors.greenAccent,
-          centerTitle: true,
-          elevation: 0.3,
-          title: Text(
-            widget.item.displayname,
-            style: const TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 18,
+    return WillPopScope(
+      onWillPop: () async {
+        await audioPlayer.stop();
+        if (altAudioPlayed) {
+          await altAudioPlayer.stop();
+        }
+        return true;
+      },
+      child: ViewModelBuilder<PlayerViewModel>.reactive(
+        onModelReady: (model) => model.init(),
+        builder: (context, model, child) => Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            foregroundColor: Colors.greenAccent,
+            centerTitle: true,
+            elevation: 0.3,
+            title: Text(
+              widget.item.displayname,
+              style: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 18,
+              ),
             ),
           ),
-        ),
-        body: GestureDetector(
-          // Swiping
-          onPanUpdate: (details) async {
-            // Swiping in right direction.
-            if (details.delta.dx > 0) {
-              int duration = await audioPlayer.getDuration();
-              int pos = await audioPlayer.getCurrentPosition();
-              if (pos + 10000 < duration) {
-                await audioPlayer.seek(
-                  Duration(
-                    milliseconds: pos + 10000,
-                  ),
-                );
-              } else {
-                if (globals.seekEndClip.isNotEmpty) {
-                  audioClipPlayer.play(
-                    globals.seekEndClip,
-                    isLocal: true,
-                  );
+          body: GestureDetector(
+            // Swiping
+            onPanUpdate: (details) async {
+              int duration = 0, pos = 0;
+              // Swiping in right direction.
+              if (details.delta.dx > 0) {
+                if (altIsCurrent) {
+                  duration = await altAudioPlayer.getDuration();
+                  pos = await altAudioPlayer.getCurrentPosition();
+                } else {
+                  duration = await audioPlayer.getDuration();
+                  pos = await audioPlayer.getCurrentPosition();
+                }
+                if (pos + 10000 < duration) {
+                  if (altIsCurrent) {
+                    await altAudioPlayer.seek(
+                      Duration(
+                        milliseconds: pos + 10000,
+                      ),
+                    );
+                  } else {
+                    await audioPlayer.seek(
+                      Duration(
+                        milliseconds: pos + 10000,
+                      ),
+                    );
+                  }
+                } else {
+                  if (globals.seekEndClip.isNotEmpty) {
+                    audioClipPlayer.play(
+                      globals.seekEndClip,
+                      isLocal: true,
+                    );
+                  }
                 }
               }
-            }
 
-            // Swiping in left direction.
-            if (details.delta.dx < 0) {
-              int pos = await audioPlayer.getCurrentPosition();
-              if (10000 < pos) {
-                await audioPlayer.seek(
-                  Duration(
-                    milliseconds: pos - 10000,
-                  ),
-                );
-              } else {
-                if (globals.seekEndClip.isNotEmpty) {
-                  audioClipPlayer.play(
-                    globals.seekEndClip,
-                    isLocal: true,
+              // Swiping in left direction.
+              else if (details.delta.dx < 0) {
+                if (altIsCurrent) {
+                  pos = await altAudioPlayer.getCurrentPosition();
+                } else {
+                  pos = await audioPlayer.getCurrentPosition();
+                }
+                if (10000 < pos) {
+                  if (altIsCurrent) {
+                    await altAudioPlayer.seek(
+                      Duration(
+                        milliseconds: pos - 10000,
+                      ),
+                    );
+                  } else {
+                    await audioPlayer.seek(
+                      Duration(
+                        milliseconds: pos - 10000,
+                      ),
+                    );
+                  }
+                } else {
+                  if (globals.seekEndClip.isNotEmpty) {
+                    audioClipPlayer.play(
+                      globals.seekEndClip,
+                      isLocal: true,
+                    );
+                  }
+                  await audioPlayer.seek(
+                    const Duration(
+                      milliseconds: 0,
+                    ),
                   );
                 }
-                await audioPlayer.seek(
-                  const Duration(
-                    milliseconds: 0,
-                  ),
-                );
               }
-            }
-          },
-          child: Column(
-            children: [
-              Expanded(
-                child: InkWell(
-                  // Lang change
-                  onLongPress: () async {
-                    // pause the current playing file
-                    if (altIsPlaying) {
-                      int result = await altAudioPlayer.pause();
-                      if (result == 1) {
-                        altIsPlaying = false;
-                      }
-                    }
-                    if (isPlaying) {
-                      int result = await audioPlayer.pause();
-                      if (result == 1) {
-                        isPlaying = false;
-                      }
-                    }
-                    // switch
-                    if (altIsCurrent) {
-                      // main lang file
-                      int result = await audioPlayer.resume();
-                      if (result == 1) {
-                        isPlaying = true;
-                      }
-                      altIsCurrent = false;
-                    } else {
-                      // alt file
-                      if (widget.item.altFile.isNotEmpty) {
-                        if (altAudioPlayed) {
-                          int result = await altAudioPlayer.resume();
-                          if (result == 1) {
-                            altIsPlaying = true;
-                          }
-                        } else {
-                          int result = await altAudioPlayer.play(
-                            widget.item.altFile,
-                            isLocal: true,
-                          );
-                          if (result == 1) {
-                            altAudioPlayed = true;
-                            altIsPlaying = true;
-                          }
+            },
+            child: Column(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    // Lang change
+                    onLongPress: () async {
+                      // pause the current playing file
+                      if (altIsPlaying) {
+                        int result = await altAudioPlayer.pause();
+                        if (result == 1) {
+                          altIsPlaying = false;
                         }
-                        altIsCurrent = true;
                       }
-                    }
-                  },
-                  onTap: () async {
-                    // pause or resume
-                    /* if (!isPlaying && !audioPlayed) {
+                      if (isPlaying) {
+                        int result = await audioPlayer.pause();
+                        if (result == 1) {
+                          isPlaying = false;
+                        }
+                      }
+                      // switch
+                      if (altIsCurrent) {
+                        // main lang file
+                        int result = await audioPlayer.resume();
+                        if (result == 1) {
+                          isPlaying = true;
+                        }
+                        altIsCurrent = false;
+                      } else {
+                        // alt file
+                        if (widget.item.altFile.isNotEmpty) {
+                          if (altAudioPlayed) {
+                            int result = await altAudioPlayer.resume();
+                            if (result == 1) {
+                              altIsPlaying = true;
+                            }
+                          } else {
+                            int result = await altAudioPlayer.play(
+                              widget.item.altFile,
+                              isLocal: true,
+                            );
+                            if (result == 1) {
+                              altAudioPlayed = true;
+                              altIsPlaying = true;
+                            }
+                          }
+                          altIsCurrent = true;
+                        }
+                      }
+                    },
+                    onTap: () async {
+                      // pause or resume
+                      /* if (!isPlaying && !audioPlayed) {
                       int result = await audioPlayer.play(
                         widget.item.file,
                         isLocal: true,
@@ -220,76 +254,77 @@ class _PlayerViewState extends State<PlayerView> {
                       }
                     } */
 
-                    if (altIsCurrent) {
-                      if (altAudioPlayed && !altIsPlaying) {
-                        int result = await altAudioPlayer.resume();
-                        if (result == 1) {
-                          altIsPlaying = true;
+                      if (altIsCurrent) {
+                        if (altAudioPlayed && !altIsPlaying) {
+                          int result = await altAudioPlayer.resume();
+                          if (result == 1) {
+                            altIsPlaying = true;
+                          }
+                        } else {
+                          int result = await altAudioPlayer.pause();
+                          if (result == 1) {
+                            altIsPlaying = false;
+                          }
                         }
                       } else {
-                        int result = await altAudioPlayer.pause();
-                        if (result == 1) {
-                          altIsPlaying = false;
+                        if (audioPlayed && !isPlaying) {
+                          int result = await audioPlayer.resume();
+                          if (result == 1) {
+                            isPlaying = true;
+                          }
+                        } else {
+                          int result = await audioPlayer.pause();
+                          if (result == 1) {
+                            isPlaying = false;
+                          }
                         }
                       }
-                    } else {
-                      if (audioPlayed && !isPlaying) {
-                        int result = await audioPlayer.resume();
-                        if (result == 1) {
-                          isPlaying = true;
-                        }
-                      } else {
-                        int result = await audioPlayer.pause();
-                        if (result == 1) {
-                          isPlaying = false;
-                        }
-                      }
-                    }
-                  },
-                  child: const Center(
-                    child: Icon(
-                      Icons.volume_up_rounded,
-                      size: 100,
-                      color: Colors.greenAccent,
+                    },
+                    child: const Center(
+                      child: Icon(
+                        Icons.volume_up_rounded,
+                        size: 100,
+                        color: Colors.greenAccent,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.all(15),
-                child: MaterialButton(
-                  height: 80,
-                  minWidth: double.infinity,
-                  color: Colors.greenAccent,
-                  onPressed: () async {
-                    if (globals.backButtonVoice.isNotEmpty) {
-                      audioPlayer.play(
-                        globals.backButtonVoice,
-                        isLocal: true,
-                      );
-                    }
-                  },
-                  onLongPress: () async {
-                    await audioPlayer.stop();
-                    if (altAudioPlayed) {
-                      await altAudioPlayer.stop();
-                    }
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    "ආපසු",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
+                Container(
+                  margin: const EdgeInsets.all(15),
+                  child: MaterialButton(
+                    height: 80,
+                    minWidth: double.infinity,
+                    color: Colors.greenAccent,
+                    onPressed: () async {
+                      if (globals.backButtonVoice.isNotEmpty) {
+                        audioPlayer.play(
+                          globals.backButtonVoice,
+                          isLocal: true,
+                        );
+                      }
+                    },
+                    onLongPress: () async {
+                      await audioPlayer.stop();
+                      if (altAudioPlayed) {
+                        await altAudioPlayer.stop();
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "ආපසු",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+        viewModelBuilder: () => PlayerViewModel(),
       ),
-      viewModelBuilder: () => PlayerViewModel(),
     );
   }
 }
