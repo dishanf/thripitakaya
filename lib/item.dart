@@ -6,6 +6,7 @@ class Item {
   late String titleFile;
   late String file;
   late String altFile;
+  late String txtFile;
   late bool isPlayable = false;
 
   Item();
@@ -52,6 +53,13 @@ class Item {
     File altFilePath = File(altFile);
     if (!altFilePath.existsSync()) {
       altFile = '';
+    }
+
+    // text file
+    txtFile = path + '/_' + displayname + '.txt';
+    File txtFilePath = File(txtFile);
+    if (!txtFilePath.existsSync()) {
+      txtFile = '';
     }
   }
 }

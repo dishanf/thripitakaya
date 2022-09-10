@@ -5,6 +5,7 @@ import 'package:tipitaka/home_view.dart';
 import 'package:tipitaka/item.dart';
 import 'package:tipitaka/player_view.dart';
 import 'package:tipitaka/splash_view.dart';
+import 'package:tipitaka/text_view.dart';
 
 class Routes {
   static const String startupView = '/';
@@ -15,7 +16,7 @@ class Routes {
   static const String confirmView = '/confirm-view';
   static const String settingsView = '/settings-view';
   static const String playerView = '/player-view';
-
+  static const String textView = '/suthra-text-view';
   static const String suthraListView = '/suthra-list-view';
 }
 
@@ -48,6 +49,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(
         routeName: settings.name,
         viewToShow: PlayerView(
+          item: data,
+        ),
+      );
+
+    case Routes.textView:
+      Map map = settings.arguments as Map;
+      Item data = map['arguments'];
+      return _getPageRoute(
+        routeName: settings.name,
+        viewToShow: TextView(
           item: data,
         ),
       );

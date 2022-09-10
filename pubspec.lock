@@ -454,7 +454,7 @@ packages:
       name: stacked_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.4"
   stacked_services:
     dependency: "direct main"
     description:
@@ -468,7 +468,7 @@ packages:
       name: stacked_themes
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.8+1"
+    version: "0.3.9"
   stream_channel:
     dependency: transitive
     description:

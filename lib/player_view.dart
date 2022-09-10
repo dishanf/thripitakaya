@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -7,6 +5,7 @@ import 'package:tipitaka/item.dart';
 import 'package:tipitaka/player_viewmodel.dart';
 import 'package:stacked/stacked.dart';
 import 'globals.dart' as globals;
+import 'dart:io';
 
 class PlayerView extends StatefulWidget {
   final Item item;
@@ -100,7 +99,7 @@ class _PlayerViewState extends State<PlayerView> {
         return true;
       },
       child: ViewModelBuilder<PlayerViewModel>.reactive(
-        onModelReady: (model) => model.init(),
+        onModelReady: (model) => model.init(widget.item),
         builder: (context, model, child) => Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -114,6 +113,21 @@ class _PlayerViewState extends State<PlayerView> {
                 fontSize: 18,
               ),
             ),
+            actions: <Widget>[
+              IconButton(
+                icon: const Icon(
+                  Icons.book,
+                  color: Colors.greenAccent,
+                ),
+                onPressed: () async {
+                  if (widget.item.txtFile.isNotEmpty) {
+                    await model.navigateToListViewPage(
+                      widget.item,
+                    );
+                  }
+                },
+              )
+            ],
           ),
           body: GestureDetector(
             // Swiping
